@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Game Over</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/estilo.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="http://beneposto.pl/jqueryrotate/js/jQueryRotateCompressed.js"></script>
+        <script src="js/nave.js"></script>
+
+    </head>
+
+    <body>
+        <audio autoplay id="vitoria">
+            <source src="audio/vitoria.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+
+        <div id="texto_over" style="text-align: center;">
+            <h1 style="color: white; text-shadow: 8px 8px red; font-size: 1000%; margin: 5% 0 0 0;">GAME OVER</h1>
+            <p style="color: white; text-shadow: 2px 2px red; font-size: 150%;" id="frase">A <span id="winner">nave</span> ganhou esta batalha!!!</p>
+            <p style="color: #f1c232; text-shadow: 1px 1px white; animation: piscaTexto 1s infinite">PRESSIONE ENTER PARA VOLTAR AO MENU</p>
+            <img style="height: 20%; width: 20%;" alt="nave vencedora" id="nave_vencedora" class="nave_vencedora" src="img/nave_cinza1.png">
+        </div>
+
+        <script type="text/javascript">
+            inicializaEnter();
+            
+            function inicializaEnter() {
+                var tecla = pegaEnter;
+                document.addEventListener('keydown', tecla);
+            }
+
+            function pegaEnter() {
+                var tecla = event.keyCode;
+                //pressiona enter comeca o jogo
+                if (tecla === 13) {
+                    document.location.href = 'intro.html';
+                }
+            }
+            
+            var nave_venceu = window.location.href;
+            var url = new URL(nave_venceu);
+            var nave_url = url.searchParams;
+            var nave = nave_url.get("venceu");
+            if (nave === 'nave_vermelha') {
+                document.getElementById('winner').innerHTML = "nave vermelha";
+                document.getElementById('nave_vencedora').src = 'img/nave_vermelha.png';
+            } else if (nave === 'nave_cinza') {
+                document.getElementById('winner').innerHTML = "nave cinza";
+                document.getElementById('nave_vencedora').src = 'img/nave_cinza.png';
+            } else if (nave === 'empate') {
+                document.getElementById('frase').innerHTML = "DEU EMPATE AÍ NÉ GALERA";
+                document.getElementById('nave_vencedora').src = 'img/empatou.jpg';
+                document.getElementById('nave_vencedora').className = 'nenhuma';
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Intro</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/estilo.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    </head>
+    <body>
+        <audio id="audio_abertura">
+            <source src="audio/opening.mp3" type="audio/mp3" />
+        </audio>
+
+        <div id="historia" >
+            <p style="color: #f1c232; text-shadow: 1px 1px white; animation: piscaTexto 1s infinite">PRESSIONE ESC PARA PULAR</p>
+            <div id="mensagens" >
+                <p id="campos">Após uma perseguição pelas partes mais distantes da galáxia,</p>
+            </div>
+        </div>
+
+        <div id="caixa">
+            <div id="titulo">
+                <h1 id="nome_jogo" >BATALHA INTERSTELAR DE NAVES ESPACIAIS GIRATÓRIAS</h1>
+                <h4 id="desenvolvedores" >Um jogo multiplayer por Bruno Oliveira e Iderli Souza</h4>
+                <h2 id="comeca_jogo" >PRESSIONE ENTER PARA COMEÇAR</h2>
+            </div>
+        </div>
+        <script>
+
+            inicializaEsc();
+            contaHistoria();
+            temaAbertura(15000);
+
+            function inicializaEnter() {
+                var tecla = pegaEnter;
+                document.addEventListener('keydown', tecla);
+            }
+
+            function inicializaEsc() {
+                var tecla = pegaEsc;
+                document.addEventListener('keydown', tecla);
+            }
+
+            function pegaEnter() {
+                var tecla = event.keyCode;
+                //pressiona enter comeca o jogo
+                if (tecla === 13) {
+                    document.location.href = 'index.html';
+                }
+            }
+
+            function pegaEsc() {
+                var tecla = event.keyCode;
+                //esc
+                if (tecla === 27) {
+                    temaAbertura(0);
+                }
+            }
+
+            function contaHistoria() {
+                var cont = 0;
+                var campos = document.getElementById('campos');
+
+                var paraTexto = setInterval(function () {
+
+                    if (cont === 0) {
+                        campos.innerHTML = 'duas naves passaram por um campo magnético que danificou';
+                    }
+                    if (cont === 1) {
+                        campos.innerHTML = 'os controles de direção de suas naves, e apenas os disparos ainda funcionam.';
+                    }
+                    if (cont === 2) {
+                        campos.innerHTML = 'Agora eles só tem uma saída... Vencer a batalha ou morrer.';
+                    }
+                    if (cont > 2) {
+                        clearInterval(paraTexto);
+                    }
+                    cont++;
+                }, 4000);
+            }
+
+            function temaAbertura(time) {
+                setTimeout(function () {
+                    document.getElementById('audio_abertura').play();
+                    if (document.getElementById("historia").parentNode) {
+                        document.getElementById("historia").remove();
+                    }
+
+                    var elem = document.getElementById("titulo");
+                    var pos = 100;
+                    var id = setInterval(frame, 50);
+                    function frame() {
+                        if (pos === 10) {
+                            clearInterval(id);
+                        } else {
+                            pos--;
+                            elem.style.top = pos + '%';
+                        }
+                    }
+                    inicializaEnter();
+                }, time);
+            }
+
+        </script>
+    </body>
+</html>

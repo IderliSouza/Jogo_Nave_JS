@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Jogo</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/estilo.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="http://beneposto.pl/jqueryrotate/js/jQueryRotateCompressed.js"></script>
+        <script src="js/nave.js"></script>
+        <script src="js/disparo.js"></script>
+
+    </head>
+
+    <body>
+        <audio autoplay id="audio_ambiente">
+            <source src="audio/trilha_sonora.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+
+        <audio id="audio_disparo_vermelha">
+            <source src="audio/audio_disparo.wav" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+
+        <audio id="audio_disparo_cinza">
+            <source src="audio/audio_cinza.wav" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <div id="corpo">
+            <div
+                id="count"
+                style="text-align: center; position: fixed; color: white; left: 48%; width: 4%;"
+                >
+                <span style="text-shadow: 2px 2px red; font-size: 300%;" id="tempo">90</span>
+            </div>
+            <div
+                id="vida_vermelha"
+                style="width: 40%; height:20px; position: fixed; background-color: red; left: 5%; "
+                >                    
+            </div>
+            <div
+                id="vida_vermelha_contorno"
+                style="width: 40%; height:20px; position: fixed; left: 5%; border: 1px solid white;"
+                >                    
+            </div>
+
+            <div
+                id="vida_cinza"
+                style="width: 40%; height:20px; position: fixed; background-color: grey; right: 5%;"
+                >                    
+            </div>
+
+            <div
+                id="vida_cinza_contorno"
+                style="width: 40%; height:20px; position: fixed; right: 5%; border: 1px solid white;"
+                >                    
+            </div>
+
+            <img id="disponivel_vermelha" alt="municao disponivel" src="img/fire.png" style=" position: fixed; left: 0; top: 96%; animation: piscaImagem 0.5s infinite;">
+            <div id="recarregando_vermelha" style="width: 180px; color: white; position: fixed; left: 25px; top: 96.4%; visibility: hidden;">       
+                recarregando...
+            </div>
+
+            <img id="disponivel_cinza" alt="municao disponivel" src="img/fire_cinza.png" style="position: fixed; left: 98%; top: 96%; animation: piscaImagem 0.5s infinite;">
+            <div id="recarregando_cinza" style="width: 180px; color: white; position: fixed; left: 87%; top: 96.3%; visibility: hidden;">       
+                recarregando...
+            </div>
+
+            <img 
+                alt="nave espacial" 
+                class="nave_vermelha" 
+                id="nave_vermelha" 
+                style="width: 125px; height: 125px; top: 100px;  left: 200px; position: fixed;" 
+                src="img/nave_vermelha.png"
+                >
+
+            <img 
+                alt="nave espacial" 
+                class="nave_cinza" 
+                id="nave_cinza" 
+                style="width: 125px; height: 125px; top: 100px;  left: 1000px; position: fixed;" 
+                src="img/nave_cinza.png"
+                >
+        </div>
+        <script type="text/javascript">
+            var time = 500;
+            var municao_cinza = 1;
+            var municao_vermelha = 1;
+            this.nave_cinza = new Nave();
+            this.nave_cinza.setNome('.nave_cinza');
+            this.nave_vermelha = new Nave();
+            this.nave_vermelha.setNome('.nave_vermelha');
+            this.nave = new Nave();
+            movimentarNave();
+            inicializa();
+
+            var municao_vermelha_disponivel = document.getElementById('disponivel_vermelha');
+            municao_vermelha_disponivel.style.animationPlayState = 'paused';
+
+            var municao_cinza_disponivel = document.getElementById('disponivel_cinza');
+            municao_cinza_disponivel.style.animationPlayState = 'paused';
+
+            var recarrengando_vermelha = document.getElementById('recarregando_vermelha');
+            var recarregando_cinza = document.getElementById('recarregando_cinza');
+
+            var tempo = Math.floor(Math.random() * 15000) + 5000;
+            nave.girar();
+            setInterval(function () {
+                nave.girar();
+                tempo = Math.floor(Math.random() * 15000) + 5000;
+            }, tempo);
+
+            var vida_restante_vermelha = document.getElementById('vida_vermelha');
+            var vida_restante_cinza = document.getElementById('vida_cinza');
+
+            var tempo_restante = 90;
+            var diminuiTempo = setInterval(function () {
+                var per_vida_vermelha = 10 * (Math.floor((vida_restante_vermelha.offsetWidth / 100)));
+                var per_vida_cinza = 10 * (Math.floor((vida_restante_cinza.offsetWidth / 100)));
+                console.log(per_vida_cinza + 'cinza');
+                console.log(per_vida_vermelha + 'vem');
+                tempo_restante--;
+                document.getElementById("tempo").textContent = tempo_restante;
+                if (tempo_restante <= 0) {
+                    console.log('vermelho ' + per_vida_vermelha);
+                    console.log('cinza ' + per_vida_cinza);
+                    clearInterval(diminuiTempo);
+                    if (per_vida_cinza > per_vida_vermelha) {
+                        document.location.href = 'game_over.html?venceu=nave_cinza';
+                    } else if (per_vida_vermelha > per_vida_cinza) {
+                        document.location.href = 'game_over.html?venceu=nave_vermelha';
+                    } else if (per_vida_cinza === per_vida_vermelha) {
+                        document.location.href = 'game_over.html?venceu=empate';
+                    }
+
+                }
+
+            }, 1000);
+
+            var audio_ambiente = document.getElementById('audio_ambiente');
+            audio_ambiente.volume = 0.5;
+
+            function inicializa() {
+                var tecla = pegaTecla;
+                document.addEventListener('keydown', tecla);
+            }
+
+            function movimentarNave() {
+                var nave1 = nave_vermelha.getNome();
+                var nave2 = nave_cinza.getNome();
+                var vermelho_morreu = false;
+                var cinza_morreu = false;
+                nave_vermelha.animaNave(nave1, nave_vermelha, false);
+                nave_cinza.animaNave(nave2, nave_cinza, false);
+
+            }
+
+            function pegaTecla() {
+                var tecla = event.keyCode;
+                var disparo = new Disparo();
+                //se apertar a tecla p, dispara projetil
+                var levou_tiro_vermelha;
+                var levou_tiro_cinza;
+
+                //p
+                if (tecla === 80) {
+                    if (municao_vermelha === 1) {
+                        nave_cinza.setColidiu(false);
+                        disparo.disparaProjetil(nave_vermelha, '.nave_vermelha', nave_cinza);
+                        municao_vermelha = municao_vermelha - 1;
+                        municao_vermelha_disponivel.style.animationPlayState = "running";
+                        recarrengando_vermelha.style.visibility = 'visible';
+                        setTimeout(function () {
+                            disparo.removeProjetil('projetil_vermelho');
+                        }, time);
+                        setTimeout(function () {
+                            if (municao_vermelha === 0) {
+                                municao_vermelha = municao_vermelha + 1;
+                                municao_vermelha_disponivel.style.animationPlayState = "paused";
+                                recarrengando_vermelha.style.visibility = 'hidden';
+                            }
+                        }, 2000);
+                    }
+                }
+
+                //q
+                if (tecla === 81) {
+                    if (municao_cinza === 1) {
+                        nave_vermelha.setColidiu(false);
+                        disparo.disparaProjetil(nave_cinza, '.nave_cinza', nave_vermelha, 'disparo');
+                        municao_cinza = municao_cinza - 1;
+                        municao_cinza_disponivel.style.animationPlayState = "running";
+                        recarregando_cinza.style.visibility = 'visible';
+                        setTimeout(function () {
+                            disparo.removeProjetil('projetil_cinza');
+                        }, time);
+                        setTimeout(function () {
+                            if (municao_cinza === 0) {
+                                municao_cinza = municao_cinza + 1;
+                                municao_cinza_disponivel.style.animationPlayState = "paused";
+                                recarregando_cinza.style.visibility = 'hidden';
+                            }
+
+                        }, 2000);
+                    }
+                }
+                time = time + 30;
+            }
+        </script>
+    </body>
+
+</html>
